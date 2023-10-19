@@ -30,8 +30,14 @@ async function run() {
       const newProduct = req.body;
       const result = await productCollection.insertOne(newProduct);
       res.send(result);
-
       console.log(newProduct);
+    });
+
+    app.get("/product/:brand", async (req, res) => {
+      const brandName = req.params.brand;
+      const cursor = productCollection.find({ brand: brandName });
+      const result = await cursor.toArray();
+      res.send(result);
     });
 
     await client.db("admin").command({ ping: 1 });
