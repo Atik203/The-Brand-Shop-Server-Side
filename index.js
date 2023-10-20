@@ -24,13 +24,21 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const productCollection = client.db("ProductDb").collection("Product");
+    const cartCollection = client.db("ProductDb").collection("Cart");
 
     // Send a ping to confirm a successful connection
     app.post("/product", async (req, res) => {
       const newProduct = req.body;
       const result = await productCollection.insertOne(newProduct);
       res.send(result);
-      console.log(newProduct);
+    });
+
+    app.post("/cart", async (req, res) => {
+      const newCart = req.body;
+      newCart._id = new ObjectId();
+      const result = await cartCollection.insertOne(newCart);
+      res.send(result);
+      console.log(newCart);
     });
 
     app.get("/product/:brand", async (req, res) => {
@@ -45,6 +53,12 @@ async function run() {
 
       const query = { _id: new ObjectId(id) };
       const result = await productCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.get("/cart", async (req, res) => {
+      const cursor = cartCollection.find();
+      const result = await cursor.toArray();
       res.send(result);
     });
 
